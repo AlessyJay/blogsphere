@@ -17,7 +17,7 @@ const Blogs = () => {
     <div className="space-y-6">
       {[1, 2, 3, 4].map((item) => {
         return (
-          <Card key={item}>
+          <Card key={item} className="bg-slate-100">
             <CardHeader>
               <div className="flex items-center">
                 <Avatar className="size-8">
@@ -34,19 +34,19 @@ const Blogs = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">
+              <p className="line-clamp-3 text-muted-foreground">
                 This is a brief preview of the blog post
               </p>
               <div className="mt-4 flex items-center justify-between">
-                <div className="space-x-4">
-                  <Badge variant={"outline"} className="gap-1">
+                <div className="space-x-4 max-sm:space-x-0">
+                  <Badge variant={"default"} className="gap-1">
                     <Heart size="18" />
                     14 Likes
                   </Badge>
-                  <Badge variant={"outline"} className="gap-1">
+                  <Badge variant={"default"} className="gap-1">
                     <MessageSquare size="18" />4 Comments
                   </Badge>
-                  <Badge variant={"outline"} className="gap-1">
+                  <Badge variant={"default"} className="gap-1">
                     <Share2 size="18" />2 Shares
                   </Badge>
                 </div>

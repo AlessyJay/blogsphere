@@ -25,6 +25,7 @@ const Profile = () => {
       desc: "Artificial Intelligence (AI) is revolutionizing modern healthcare by enhancing diagnostics, treatment planning, and patient care. AI-driven algorithms can analyze vast amounts of medical data, improving the accuracy of disease detection, especially in areas like radiology, pathology, and genomics. Predictive analytics powered by AI helps in early disease identification, allowing for more timely interventions. In treatment, AI supports personalized medicine by tailoring therapies to individual patient profiles, improving outcomes and reducing side effects.",
       likes: 128,
       comments: 32,
+      share: 3,
     },
     {
       id: 2,
@@ -32,6 +33,7 @@ const Profile = () => {
       desc: "5G technology is transforming connectivity by delivering faster speeds, lower latency, and greater capacity than previous networks. With speeds up to 100 times faster than 4G, 5G enables real-time communication, revolutionizing industries like healthcare, transportation, and entertainment. It supports the growth of the Internet of Things (IoT), connecting billions of devices seamlessly and powering innovations like smart cities and autonomous vehicles. 5G’s ultra-reliable, low-latency communication enhances remote work, virtual reality, and telemedicine. By creating a more connected and efficient world, 5G is poised to drive unprecedented advancements in technology and global infrastructure.",
       likes: 95,
       comments: 18,
+      share: 3,
     },
     {
       id: 3,
@@ -39,6 +41,7 @@ const Profile = () => {
       desc: "The future of work is increasingly defined by the balance between remote and office-based models. Remote work offers flexibility, reduces commuting time, and allows employees to maintain a better work-life balance. It also enables companies to tap into a global talent pool. However, office environments foster collaboration, spontaneous innovation, and stronger team dynamics. Hybrid models, blending remote and in-office work, are emerging as a popular solution, offering the best of both worlds. As technology continues to evolve, businesses are likely to prioritize flexibility, allowing employees to choose work settings that maximize productivity and job satisfaction.",
       likes: 210,
       comments: 45,
+      share: 3,
     },
   ];
 
@@ -141,16 +144,19 @@ const Profile = () => {
                         <h3 className="text-lg font-semibold text-black">
                           {item.title}
                         </h3>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="line-clamp-3 text-sm text-muted-foreground">
                           {item.desc}
                         </p>
                         <div className="mt-2 flex items-center justify-between space-x-4">
-                          <div className="space-x-5">
-                            <Badge variant={"default"}>
+                          <div className="flex-col space-x-5 max-sm:flex max-sm:gap-1 max-sm:space-x-0">
+                            <Badge variant={"default"} className="max-sm:w-fit">
                               {item.likes} likes
                             </Badge>
-                            <Badge variant={"default"}>
+                            <Badge variant={"default"} className="max-sm:w-fit">
                               {item.comments} comments
+                            </Badge>
+                            <Badge variant={"default"} className="max-sm:w-fit">
+                              {item.share} shares
                             </Badge>
                           </div>
                           <Button className="my-2">Read More</Button>

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import React from "react";
-import { SessionProvider } from "next-auth/react";
 
 const inter = Poppins({
   subsets: ["latin"],
@@ -24,10 +23,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <SessionProvider>
-      <html lang="en">
-        <body className={`${inter.className} antialiased`}>{children}</body>
-      </html>
-    </SessionProvider>
+    <html lang="en">
+      <body className={`${inter.className} antialiased`}>{children}</body>
+    </html>
   );
 }

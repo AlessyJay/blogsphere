@@ -8,10 +8,9 @@ import {
   SignUpSchema,
   SignUpType,
 } from "../FormSchemas";
-import { CredentialsSignin } from "next-auth";
-import { signIn, signOut } from "@/auth";
-import { getToken } from "next-auth/jwt";
-import { NextRequest, NextResponse } from "next/server";
+import { uuid } from "uuidv4";
+
+const isTokenExpired = new Date(14 * 24 * 60 * 60 * 1000);
 
 export const SignUp = async (credentials: SignUpType) => {
   try {
@@ -29,7 +28,7 @@ export const SignUp = async (credentials: SignUpType) => {
 
     if (exisitngUser) throw new Error("This email has been taken!");
 
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         firstName,
         lastName,
@@ -39,6 +38,17 @@ export const SignUp = async (credentials: SignUpType) => {
         username: firstName.toLowerCase() + lastName.toLowerCase(),
       },
     });
+
+    await prisma.session.create({
+      data: {
+        id: uuid(),
+        expires: isTokenExpired,
+        sessionToken: uuid(),
+        userId: user.id,
+      },
+    });
+
+    return user;
   } catch (error) {
     console.log(error);
   }
@@ -63,28 +73,31 @@ export const SignIn = async (credentials: SignInType) => {
 
     if (!pwHash) return { error: "Incorrect username or password!" };
 
-    await signIn("credentials", {
-      redirect: false,
-      callbackUrl: "/",
-      email,
-      password,
+    const findSession = await prisma.session.findFirst({
+      where: {
+        userId: {
+          equals: exisitngUser.id,
+        },
+      },
     });
+
+    if (!findSession) {
+      await prisma.session.create({
+        data: {
+          id: uuid(),
+          expires: isTokenExpired,
+          sessionToken: uuid(),
+          userId: exisitngUser.id,
+        },
+      });
+    }
   } catch (error) {
-    const errors = error as CredentialsSignin;
-    return errors.cause;
+    console.log(error);
   }
 };
 
-export const SignOut = async () => {
-  await signOut();
-};
-
-export const GetUser = async (req: NextRequest) => {
+export const GetUser = async () => {
   try {
-    const token = await getToken({ req });
-
-    if (!token) return NextResponse.redirect(new URL("/sign-in", req.url));
-
     // const user = await prisma.user.findFirst({
     //   where: {
     //     email: {

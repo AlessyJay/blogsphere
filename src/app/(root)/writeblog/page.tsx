@@ -1,7 +1,7 @@
 import WriteBlog from "@/components/shared/WriteBlog";
 import React from "react";
 
-const WriteABlog = () => {
+const WriteABlog = async () => {
   return <WriteBlog />;
 };
 

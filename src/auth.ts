@@ -1,67 +1,80 @@
-import NextAuth, { CredentialsSignin } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import Facebook from "next-auth/providers/facebook";
-import Google from "next-auth/providers/google";
+import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
 import { prisma } from "./prisma";
-import { compare } from "bcryptjs";
+import { Lucia, Session, User } from "lucia";
+import { cache } from "react";
+import { cookies } from "next/headers";
 
-export const { auth, handlers, signIn, signOut } = NextAuth({
-  providers: [
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    }),
-    Facebook({
-      clientId: process.env.AUTH_FACEBOOK_ID,
-      clientSecret: process.env.AUTH_FACEBOOK_SECRET,
-    }),
-    Credentials({
-      credentials: {
-        email: { label: "email", type: "email" },
-        password: { label: "password", type: "password" },
-      },
-      authorize: async (credentials) => {
-        const email = (credentials.email as string) || undefined;
-        const password = (credentials.password as string) || undefined;
+const adapter = new PrismaAdapter(prisma.session, prisma.user);
 
-        if (!email || !password)
-          throw new CredentialsSignin(
-            "Please, provide both email and password",
-          );
+export const lucia = new Lucia(adapter, {
+  sessionCookie: {
+    expires: false,
+    attributes: {
+      secure: process.env.NODE_ENV === "production",
+    },
+  },
 
-        const user = await prisma.user.findFirst({
-          where: {
-            email: {
-              equals: email,
-            },
-          },
-        });
-
-        if (!user)
-          throw new CredentialsSignin({ cause: "Invalid email or password!" });
-
-        if (!user.password)
-          throw new CredentialsSignin({ cause: "Invalid email or password!" });
-
-        const pwHash = await compare(password, user.password);
-
-        if (!pwHash) throw new Error("Incorrect password!");
-
-        const userData = {
-          firstName: user.firstName,
-          lastName: user.lastName,
-          displayName: user.displayName,
-          email: user.email,
-          username: user.username,
-          password: pwHash,
-        };
-
-        return userData;
-      },
-    }),
-  ],
-
-  pages: {
-    signIn: "/sign-in",
+  getUserAttributes(databaseUserAttributes) {
+    return {
+      id: databaseUserAttributes.id,
+      username: databaseUserAttributes.username,
+      firstName: databaseUserAttributes.firstName,
+      lastName: databaseUserAttributes.lastName,
+      email: databaseUserAttributes.email,
+      displayName: databaseUserAttributes.displayName,
+    };
   },
 });
+
+interface databaseUserAttributes {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  displayName: string;
+}
+
+declare module "lucia" {
+  // eslint-disable-next-line no-unused-vars
+  interface Register {
+    Lucia: typeof lucia;
+    DatabaseUserAttributes: databaseUserAttributes;
+  }
+}
+
+export const validateRequest = cache(
+  async (): Promise<
+    { user: User; session: Session } | { user: null; session: null }
+  > => {
+    const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
+
+    if (!sessionId) {
+      return { user: null, session: null };
+    }
+
+    const result = await lucia.validateSession(sessionId);
+
+    try {
+      if (result.session && result.session.fresh) {
+        const sessionCookie = lucia.createSessionCookie(result.session.id);
+        cookies().set(
+          sessionCookie.name,
+          sessionCookie.value,
+          sessionCookie.attributes,
+        );
+      }
+
+      if (!result.session) {
+        const sessionCookie = lucia.createBlankSessionCookie();
+        cookies().set(
+          sessionCookie.name,
+          sessionCookie.value,
+          sessionCookie.attributes,
+        );
+      }
+    } catch {}
+
+    return result;
+  },
+);
