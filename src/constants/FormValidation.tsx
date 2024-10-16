@@ -5,26 +5,43 @@ import {
   SignInType,
   SignUpSchema,
   SignUpType,
-  WriteBlog,
+  WriteBlogType,
   WriteBlogSchema,
   WriteCommentsSchema,
   WriteCommentsType,
 } from "./FormSchemas";
 import { SignIn, SignUp } from "./actions/user.actions";
 
-export const WriteBlogValidation = () => {
-  const WriteBlogForm = useForm<WriteBlog>({
+export const WriteBlogValidation = ({ user }: { user: string }) => {
+  const WriteBlogForm = useForm<WriteBlogType>({
     resolver: zodResolver(WriteBlogSchema),
     defaultValues: {
       title: "",
       category: "",
       content: "",
       estimateTime: "",
+      authorId: user,
     },
   });
 
-  const onSubmit = (values: WriteBlog) => {
-    console.log(values);
+  const onSubmit = async (values: WriteBlogType) => {
+    try {
+      const res = await fetch("/api/blogs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!res.ok) throw new Error("Failed to create blog post");
+
+      const data = await res.json();
+      console.log("Blog post created:", data);
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return { WriteBlogForm, onSubmit };

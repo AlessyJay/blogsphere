@@ -9,10 +9,11 @@ export const WriteBlogSchema = z.object({
     message: "Content is required at least 10 characters!",
   }),
   category: z.string().min(1),
-  estimateTime: z.string().time(),
+  estimateTime: z.string(),
+  authorId: z.string(),
 });
 
-export type WriteBlog = z.infer<typeof WriteBlogSchema>;
+export type WriteBlogType = z.infer<typeof WriteBlogSchema>;
 
 // ------------
 
