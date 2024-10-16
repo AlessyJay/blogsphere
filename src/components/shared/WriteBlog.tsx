@@ -1,22 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Pencil } from "lucide-react";
 import { Button } from "../ui/button";
 import { Form } from "../ui/form";
 import { WriteBlogValidation } from "@/constants/FormValidation";
 import { InputForm, TextAreaForm } from "./FormComponents";
 
-const WriteBlog = () => {
-  // eslint-disable-next-line no-unused-vars
-  const [wordCount, setWordCount] = useState<number>(0);
-
-  const { WriteBlogForm, onSubmit } = WriteBlogValidation();
-
-  // const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-  //   const words = e.target.value.trim().split(/\s+/);
-  //   setWordCount(words.length);
-  // };
+const WriteBlog = ({ user }: { user: any }) => {
+  const { WriteBlogForm, onSubmit } = WriteBlogValidation({
+    user: user.id,
+  });
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-100 px-4 py-12 sm:px-6 lg:px-8">
@@ -46,7 +40,7 @@ const WriteBlog = () => {
                 className="mt-5"
               />
               <p className="mb-5 text-sm text-muted-foreground">
-                Word count: {wordCount}
+                Word count: 0
               </p>
 
               <div className="grid grid-cols-2 gap-3">
@@ -64,6 +58,7 @@ const WriteBlog = () => {
                   title="Time to Read"
                   placeholder="5-10 minutes"
                   titleClassName="text-xl"
+                  type="number"
                 />
               </div>
 

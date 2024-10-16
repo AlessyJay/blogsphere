@@ -7,13 +7,11 @@ const layout = async ({
   children,
 }: Readonly<{ children: React.ReactNode }>) => {
   const result = await GetUser();
-
-  console.log(result?.user);
   return (
     <div className="flex max-sm:flex-col">
-      <LeftsideBar user={result?.user} />
+      <LeftsideBar user={{ ...result?.user }} />
       {children}
-      <MobileNavbar user={result?.user} />
+      <MobileNavbar user={{ ...result?.user }} />
     </div>
   );
 };

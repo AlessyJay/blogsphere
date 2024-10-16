@@ -1,4 +1,3 @@
-import Blogs from "@/components/shared/Blogs";
 import {
   Select,
   SelectTrigger,
@@ -9,8 +8,20 @@ import {
 import { Heart, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import React from "react";
+import { GetAllLikes } from "@/constants/actions/user.actions";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { buttonVariants } from "@/components/ui/button";
+import Link from "next/link";
 
-const LinkedBlogs = () => {
+const LinkedBlogs = async () => {
+  const result = await GetAllLikes();
   return (
     <div className="min-h-screen w-full flex-1 px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto">
@@ -43,7 +54,40 @@ const LinkedBlogs = () => {
         </div>
 
         <div className="space-y-6">
-          <Blogs />
+          {result?.map((item) => {
+            return (
+              <Card key={item.id} className="bg-slate-100">
+                <CardHeader>
+                  <div className="flex items-center">
+                    <Avatar className="size-8">
+                      <AvatarFallback>A</AvatarFallback>
+                    </Avatar>
+                    <div className="ml-2">
+                      <CardTitle className="text-lg">
+                        Blog Post Title {item.blog.title}
+                      </CardTitle>
+                      <CardDescription>
+                        by Author {item.user.displayName} • 5 minutes read
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="line-clamp-3 text-muted-foreground">
+                    {item.blog.content}
+                  </p>
+                  <div className="mt-4 flex items-center justify-between">
+                    <Link
+                      href={`/blog/${item}`}
+                      className={buttonVariants({ variant: "default" })}
+                    >
+                      Read More
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
     </div>

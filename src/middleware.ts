@@ -7,7 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "";
 export const middleware = (req: NextRequest) => {
   const token = req.cookies.get("token")?.value;
 
-  if (typeof token !== "string") return;
+  if (!token) return NextResponse.redirect(new URL("/sign-in", req.url));
 
   const protectedRoutes = ["/writeblog"];
 

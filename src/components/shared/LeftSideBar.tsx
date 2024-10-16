@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Pencil } from "lucide-react";
+import { BookOpen, Pencil, User } from "lucide-react";
 import React from "react";
 import { buttonVariants } from "../ui/button";
 import Link from "next/link";
@@ -8,7 +8,7 @@ import { leftSideBar } from "@/constants";
 import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
-const LeftsideBar = (user: any) => {
+const LeftsideBar = ({ user }: { user: any }) => {
   const pathname = usePathname();
   return (
     <main>
@@ -64,20 +64,31 @@ const LeftsideBar = (user: any) => {
           </nav>
 
           <footer className="mb-6 mt-auto flex items-center gap-3 rounded-md border bg-background p-2 shadow-sm">
-            <Link href={`/profile`} className="size-full">
-              <div className="flex items-center gap-3">
-                <Avatar>
-                  {user?.image && <AvatarImage src={user?.image} />}
-                  <AvatarFallback>
-                    {user?.firstName}
-                    {user?.lastName}
-                  </AvatarFallback>
-                </Avatar>
-                <p className="max-[1025px]:hidden">
-                  {user?.firstName} {user?.lastName}
-                </p>
-              </div>
-            </Link>
+            {Object.keys(user).length === 0 ? (
+              <Link href={`/sign-in`} className="size-full">
+                <div className="flex items-center gap-3">
+                  <Avatar className="flex items-center justify-center">
+                    <User className="size-8" />
+                  </Avatar>
+                  <p className="text-xl max-[1025px]:hidden">Login</p>
+                </div>
+              </Link>
+            ) : (
+              <Link href={`/profile`} className="size-full">
+                <div className="flex items-center gap-3">
+                  <Avatar>
+                    {user.image && <AvatarImage src={user.image} />}
+                    <AvatarFallback>
+                      {user.firstName[0]}
+                      {user.lastName[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <p className="max-[1025px]:hidden">
+                    {user.firstName} {user.lastName}
+                  </p>
+                </div>
+              </Link>
+            )}
           </footer>
         </div>
       </aside>

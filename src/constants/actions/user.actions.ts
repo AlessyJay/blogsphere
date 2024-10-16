@@ -7,7 +7,6 @@ import {
   SignUpSchema,
   SignUpType,
 } from "../FormSchemas";
-import { uuid } from "uuidv4";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
@@ -89,16 +88,8 @@ export const SignIn = async (credentials: SignInType) => {
       expiresIn: JWT_EXPIRES_IN,
     });
 
-    await prisma.session.upsert({
-      where: {
-        userId: exisitngUser.id,
-      },
-      update: {
-        expires: isTokenExpired,
-        sessionToken: token,
-      },
-      create: {
-        id: uuid(),
+    await prisma.session.create({
+      data: {
         expires: isTokenExpired,
         sessionToken: token,
         userId: exisitngUser.id,
@@ -112,8 +103,6 @@ export const SignIn = async (credentials: SignInType) => {
       maxAge: 60 * 60 * 24 * 14, // 14 days
       path: "/",
     });
-
-    return redirect("/");
   } catch (error) {
     console.log(error);
   }
@@ -133,7 +122,7 @@ export const GetUser = async () => {
     });
 
     if (!session) {
-      throw new Error("No session found for this user.");
+      return { user: null, session: null };
     }
 
     return session;
@@ -141,3 +130,95 @@ export const GetUser = async () => {
     console.log(error);
   }
 };
+
+export const GetUserProfile = async (session: string) => {
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: session,
+      },
+      include: {
+        blogs: true,
+        Share: true,
+        bookmarks: true,
+        Comment: true,
+        like: true,
+        Reply: true,
+        followers: true,
+        following: true,
+      },
+    });
+
+    if (!user) {
+      return redirect("/sign-in");
+    }
+
+    return user;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const GetAllBookmarks = async () => {
+  try {
+    const session = await validateRequest();
+
+    const bookmarks = await prisma.bookmark.findMany({
+      where: {
+        userId: session.user?.id,
+      },
+      include: {
+        blog: true,
+        user: true,
+      },
+    });
+
+    return bookmarks;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const GetAllLikes = async () => {
+  try {
+    const session = await validateRequest();
+
+    const likes = await prisma.like.findMany({
+      where: {
+        userId: session.user?.id,
+      },
+      include: {
+        blog: true,
+        user: true,
+      },
+    });
+
+    return likes;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// export const Logout = async () => {
+//   try {
+//     cookies().set("token", "", {
+//       httpOnly: true,
+//       secure: process.env.NODE_ENV === "production",
+//       sameSite: "strict",
+//       maxAge: 0,
+//       path: "/",
+//     });
+
+//     // Remove token from database
+//     const userSession = await validateRequest();
+//     await prisma.session.delete({
+//       where: {
+//         userId: userSession.user.id,
+//       },
+//     });
+
+//     return redirect("/sign-in");
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
