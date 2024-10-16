@@ -17,7 +17,6 @@ import {
 import { Form } from "../ui/form";
 import { SignInValidation, SignUpValidation } from "@/constants/FormValidation";
 import { Progress } from "../ui/progress";
-import { signIn } from "@/auth";
 
 const SignInSignUp = ({ type }: { type: string }) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -224,11 +223,7 @@ const SignInSignUp = ({ type }: { type: string }) => {
               Using Google
             </Button>
 
-            <Button
-              variant={"outline"}
-              className="w-full"
-              onClick={() => signIn("facebook")}
-            >
+            <Button variant={"outline"} className="w-full">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 x="0px"

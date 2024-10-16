@@ -11,7 +11,6 @@ import {
   WriteCommentsType,
 } from "./FormSchemas";
 import { SignIn, SignUp } from "./actions/user.actions";
-import { useRouter } from "next/navigation";
 
 export const WriteBlogValidation = () => {
   const WriteBlogForm = useForm<WriteBlog>({
@@ -47,7 +46,6 @@ export const WriteCommentValidation = () => {
 };
 
 export const SignInValidation = () => {
-  const router = useRouter();
   const SignInForm = useForm<SignInType>({
     resolver: zodResolver(SignInSchema),
     defaultValues: {
@@ -59,15 +57,12 @@ export const SignInValidation = () => {
   const SignInSubmit = async (values: SignInType) => {
     console.log(values);
     await SignIn(values);
-
-    router.push("/");
   };
 
   return { SignInForm, SignInSubmit };
 };
 
 export const SignUpValidation = () => {
-  const router = useRouter();
   const SignUpForm = useForm<SignUpType>({
     resolver: zodResolver(SignUpSchema),
     defaultValues: {
@@ -83,8 +78,6 @@ export const SignUpValidation = () => {
   const SignUpSubmit = async (values: SignUpType) => {
     console.log(values);
     await SignUp(values);
-
-    router.push("/profile");
   };
 
   return { SignUpForm, SignUpSubmit };

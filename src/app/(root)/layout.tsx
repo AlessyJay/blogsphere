@@ -1,15 +1,19 @@
 import LeftsideBar from "@/components/shared/LeftSideBar";
 import MobileNavbar from "@/components/shared/MobileNavbar";
+import { GetUser } from "@/constants/actions/user.actions";
 import React from "react";
 
 const layout = async ({
   children,
 }: Readonly<{ children: React.ReactNode }>) => {
+  const result = await GetUser();
+
+  console.log(result?.user);
   return (
     <div className="flex max-sm:flex-col">
-      <LeftsideBar />
+      <LeftsideBar user={result?.user} />
       {children}
-      <MobileNavbar />
+      <MobileNavbar session={result?.user} />
     </div>
   );
 };

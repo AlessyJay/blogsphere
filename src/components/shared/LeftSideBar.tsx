@@ -6,14 +6,14 @@ import { buttonVariants } from "../ui/button";
 import Link from "next/link";
 import { leftSideBar } from "@/constants";
 import { usePathname } from "next/navigation";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
-const LeftsideBar = () => {
+const LeftsideBar = (user: any) => {
   const pathname = usePathname();
   return (
     <main>
-      <aside className="relative hidden w-[300px] border-r px-7 max-[1025px]:w-fit md:block">
-        <div className="sticky left-0 top-0 flex h-screen flex-col max-[1025px]:items-center">
+      <aside className="hidden h-full w-[300px] border-r px-7 max-[1025px]:w-fit md:block">
+        <div className="sticky top-0 flex h-screen flex-col max-[1025px]:items-center">
           <div className="mb-6 flex items-center gap-3 pt-6">
             <Link href="/" className="flex items-center gap-3">
               <BookOpen className="size-6 max-[1025px]:size-10" />
@@ -67,12 +67,15 @@ const LeftsideBar = () => {
             <Link href={`/profile`} className="size-full">
               <div className="flex items-center gap-3">
                 <Avatar>
-                  {/* {authenticated.picture && (
-                <AvatarImage src={authenticated.picture} />
-              )} */}
-                  <AvatarFallback>TP</AvatarFallback>
+                  {user?.image && <AvatarImage src={user?.image} />}
+                  <AvatarFallback>
+                    {user?.firstName}
+                    {user?.lastName}
+                  </AvatarFallback>
                 </Avatar>
-                <p className="max-[1025px]:hidden">Tony Peeranat</p>
+                <p className="max-[1025px]:hidden">
+                  {user?.firstName} {user?.lastName}
+                </p>
               </div>
             </Link>
           </footer>
