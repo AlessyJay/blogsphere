@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Bell, BookHeart, Heart, Home } from "lucide-react";
 import Link from "next/link";
 
-const MobileNavbar = () => {
+const MobileNavbar = (user: any) => {
   return (
     <section className="sticky bottom-0 z-10 hidden h-14 w-full border bg-white max-sm:block">
       <div className="grid h-full grid-cols-5">

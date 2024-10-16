@@ -13,7 +13,7 @@ const layout = async ({
     <div className="flex max-sm:flex-col">
       <LeftsideBar user={result?.user} />
       {children}
-      <MobileNavbar session={result?.user} />
+      <MobileNavbar user={result?.user} />
     </div>
   );
 };
