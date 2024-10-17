@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -27,6 +27,25 @@ import { AlertCircle, Bell, User } from "lucide-react";
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState<string>("account");
+  const [userData, setUserData] = useState<any>();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const res = await fetch("/api/profileSettings");
+
+        if (!res.ok) throw new Error("Failed to fetch user data");
+
+        const storedData = await res.json();
+
+        setUserData(storedData.user);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto flex-1">
@@ -67,8 +86,11 @@ const Settings = () => {
               <CardContent className="space-y-4">
                 <div className="flex flex-col items-center space-y-4">
                   <Avatar className="size-28">
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>CN</AvatarFallback>
+                    <AvatarImage src={userData?.image} />
+                    <AvatarFallback>
+                      {userData?.firstName[0]}
+                      {userData?.lastName[0]}
+                    </AvatarFallback>
                   </Avatar>
                   <Button>Change Avatar</Button>
                 </div>

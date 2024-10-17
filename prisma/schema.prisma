@@ -26,6 +26,7 @@ model User {
   location                       String?
   website                        String?
   image                          String?
+  coverImage                     String?
   enabledTwoFactorAuthentication Boolean  @default(true)
   createdAt                      DateTime @default(now())
   updatedAt                      DateTime @updatedAt
@@ -38,34 +39,10 @@ model User {
   followers     Follows[]       @relation("Followers")
   blogs         Blog[]
   categories    Category[]      @relation("UserCategories")
-  Account       Account?
   Session       Session[]
   Comment       Comment[]
   Reply         Reply[]
   Share         Share[]
-}
-
-model Account {
-  id                       String  @id @default(cuid())
-  userId                   String  @unique
-  type                     String
-  provider                 String
-  providerAccountId        String
-  refresh_token            String?
-  access_token             String?
-  expires_at               Int?
-  token_type               String?
-  scope                    String?
-  id_token                 String?
-  session_state            String?
-  refresh_token_expires_in Int?
-  user                     User?   @relation(fields: [userId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([provider, providerAccountId])
-  @@index([userId])
 }
 
 model Session {
@@ -90,7 +67,7 @@ model VerificationToken {
 model Blog {
   id                String         @id @default(cuid())
   title             String
-  content           String
+  content           String         @db.Text
   authorId          String
   estimatedReadTime String
   createdAt         DateTime       @default(now())
@@ -106,7 +83,7 @@ model Blog {
 
 model Category {
   id          String   @id @default(uuid())
-  name        String
+  name        String   @unique
   description String?
   creatorId   String
   createdAt   DateTime @default(now())
@@ -138,30 +115,34 @@ model Bookmark {
 }
 
 model Like {
-  id     String @id @default(cuid())
-  blogId String
-  userId String
-  blog   Blog   @relation(fields: [blogId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user   User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id      String   @id @default(cuid())
+  blogId  String
+  userId  String
+  likedAt DateTime @default(now())
+  blog    Blog     @relation(fields: [blogId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user    User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model Comment {
-  id      String  @id @default(cuid())
-  blogId  String
-  userId  String
-  content String
-  blog    Blog    @relation(fields: [blogId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user    User    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  replies Reply[]
+  id          String   @id @default(cuid())
+  blogId      String
+  userId      String
+  content     String
+  commentedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  blog        Blog     @relation(fields: [blogId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user        User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies     Reply[]
 }
 
 model Reply {
-  id        String  @id @default(cuid())
+  id        String   @id @default(cuid())
   commentId String
   userId    String
   content   String
-  comment   Comment @relation(fields: [commentId], references: [id])
-  user      User    @relation(fields: [userId], references: [id])
+  repliedAt DateTime @default(now())
+  comment   Comment  @relation(fields: [commentId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Image {

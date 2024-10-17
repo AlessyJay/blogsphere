@@ -23,17 +23,26 @@ const Blogs = async () => {
         return (
           <Card key={item.id} className="bg-slate-100">
             <CardHeader>
-              <div className="flex items-center">
-                <Avatar className="size-8">
-                  <AvatarFallback>A</AvatarFallback>
-                </Avatar>
-                <div className="ml-2">
-                  <CardTitle className="text-lg">
-                    Blog Post Title {item.title}
-                  </CardTitle>
-                  <CardDescription>
-                    by Author {item.author.displayName} • 5 minutes read
-                  </CardDescription>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Avatar className="size-8">
+                    <AvatarFallback>
+                      {item.author.username[0].toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="ml-2">
+                    <CardTitle className="text-lg">{item.title}</CardTitle>
+                    <CardDescription>
+                      by Author <strong>{item.author.username}</strong> •{" "}
+                      {item.estimatedReadTime} minutes read
+                    </CardDescription>
+                  </div>
+                </div>
+
+                <div className="flex">
+                  {item.BlogCategory.map((cate) => (
+                    <Badge key={cate.blogId}>{cate.category.name}</Badge>
+                  ))}
                 </div>
               </div>
             </CardHeader>
@@ -57,7 +66,7 @@ const Blogs = async () => {
                   </Badge>
                 </div>
                 <Link
-                  href={`/blog/${item}`}
+                  href={`/blog/${item.id}`}
                   className={buttonVariants({ variant: "default" })}
                 >
                   Read More

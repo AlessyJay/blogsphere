@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
   CardContent,
@@ -14,37 +14,11 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Settings, BookOpen, UserRoundPlus } from "lucide-react";
 import Link from "next/link";
-import { AvatarImage } from "@radix-ui/react-avatar";
 
 const UserProfile = ({ user, session }: { user: any; session: any }) => {
   const [activeTab, setActiveTab] = useState<string>("posts");
 
-  //   const posts = [
-  //     {
-  //       id: 1,
-  //       title: "The Impact of AI on Modern Healthcare",
-  //       desc: "Artificial Intelligence (AI) is revolutionizing modern healthcare by enhancing diagnostics, treatment planning, and patient care. AI-driven algorithms can analyze vast amounts of medical data, improving the accuracy of disease detection, especially in areas like radiology, pathology, and genomics. Predictive analytics powered by AI helps in early disease identification, allowing for more timely interventions. In treatment, AI supports personalized medicine by tailoring therapies to individual patient profiles, improving outcomes and reducing side effects.",
-  //       likes: 128,
-  //       comments: 32,
-  //       share: 3,
-  //     },
-  //     {
-  //       id: 2,
-  //       title: "5G Technology: Revolutionizing Connectivity",
-  //       desc: "5G technology is transforming connectivity by delivering faster speeds, lower latency, and greater capacity than previous networks. With speeds up to 100 times faster than 4G, 5G enables real-time communication, revolutionizing industries like healthcare, transportation, and entertainment. It supports the growth of the Internet of Things (IoT), connecting billions of devices seamlessly and powering innovations like smart cities and autonomous vehicles. 5G’s ultra-reliable, low-latency communication enhances remote work, virtual reality, and telemedicine. By creating a more connected and efficient world, 5G is poised to drive unprecedented advancements in technology and global infrastructure.",
-  //       likes: 95,
-  //       comments: 18,
-  //       share: 3,
-  //     },
-  //     {
-  //       id: 3,
-  //       title: "The Future of Work: Remote vs. Office",
-  //       desc: "The future of work is increasingly defined by the balance between remote and office-based models. Remote work offers flexibility, reduces commuting time, and allows employees to maintain a better work-life balance. It also enables companies to tap into a global talent pool. However, office environments foster collaboration, spontaneous innovation, and stronger team dynamics. Hybrid models, blending remote and in-office work, are emerging as a popular solution, offering the best of both worlds. As technology continues to evolve, businesses are likely to prioritize flexibility, allowing employees to choose work settings that maximize productivity and job satisfaction.",
-  //       likes: 210,
-  //       comments: 45,
-  //       share: 3,
-  //     },
-  //   ];
+  console.log(user);
 
   return (
     <div className="min-h-screen w-full flex-1">
@@ -180,7 +154,7 @@ const UserProfile = ({ user, session }: { user: any; session: any }) => {
                                 variant={"default"}
                                 className="max-sm:w-fit"
                               >
-                                {item.share.length} shares
+                                {item.shares.length} shares
                               </Badge>
                             </div>
                             <Button className="my-2">Read More</Button>

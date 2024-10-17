@@ -19,10 +19,9 @@ export type WriteBlogType = z.infer<typeof WriteBlogSchema>;
 
 // For Write a comment form
 export const WriteCommentsSchema = z.object({
-  content: z
-    .string()
-    .min(1, { message: "The comment cannot be blank!" })
-    .optional(),
+  content: z.string().min(1, { message: "The comment cannot be blank!" }),
+  authorId: z.string(),
+  blogId: z.string(),
 });
 
 export type WriteCommentsType = z.infer<typeof WriteCommentsSchema>;
@@ -59,3 +58,31 @@ export const SignUpSchema = z
   });
 
 export type SignUpType = z.infer<typeof SignUpSchema>;
+
+// For user profile settings, updating, and retrieving
+export const UserProfileUpdate = z
+  .object({
+    username: z.string(),
+    email: z.string().email(),
+    displayName: z.string().min(1, { message: "Display name is required!" }),
+    bio: z
+      .string()
+      .max(120, { message: "Bio cannot be more than 120 characters!" })
+      .optional(),
+    location: z.string().optional(),
+    website: z.string().url().optional(),
+    currentPassword: z.string(),
+    newPassword: z
+      .string()
+      .min(8, { message: "Minimum password length is 8 characters!" })
+      .max(35),
+    confirmPassword: z.string().min(8).max(35),
+    enabledTwoFactors: z.boolean(),
+    enabledEmailNotif: z.boolean(),
+    enabledPushNotif: z.boolean(),
+    notifFrequency: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords are not match!",
+    path: ["confirmPassword"],
+  });

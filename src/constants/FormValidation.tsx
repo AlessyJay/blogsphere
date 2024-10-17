@@ -25,8 +25,9 @@ export const WriteBlogValidation = ({ user }: { user: string }) => {
   });
 
   const onSubmit = async (values: WriteBlogType) => {
+    console.log(values);
     try {
-      const res = await fetch("/api/blogs", {
+      const res = await fetch("/api/writeBlog", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,29 +35,51 @@ export const WriteBlogValidation = ({ user }: { user: string }) => {
         body: JSON.stringify(values),
       });
 
-      if (!res.ok) throw new Error("Failed to create blog post");
+      if (!res.ok) throw new Error("Failed to create blog");
 
-      const data = await res.json();
-      console.log("Blog post created:", data);
-      return data;
+      const blog = await res.json();
+      console.log("Blog created successfully", blog);
     } catch (error) {
-      console.log(error);
+      console.error("Error summit blog: ", error);
     }
   };
 
   return { WriteBlogForm, onSubmit };
 };
 
-export const WriteCommentValidation = () => {
+export const WriteCommentValidation = ({
+  authorId,
+  blogId,
+}: {
+  authorId: string;
+  blogId: string;
+}) => {
   const form = useForm<WriteCommentsType>({
     resolver: zodResolver(WriteCommentsSchema),
     defaultValues: {
       content: "",
+      authorId,
+      blogId,
     },
   });
 
-  const onSubmit = (values: WriteCommentsType) => {
-    console.log(values);
+  const onSubmit = async (values: WriteCommentsType) => {
+    try {
+      const result = await fetch("/api/writeComment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!result.ok) throw new Error("Failed to post comment.");
+
+      const data = await result.json();
+      console.log("Comment posted!", data);
+    } catch (error) {
+      console.error("Error posting comment: ", error);
+    }
   };
 
   return { form, onSubmit };

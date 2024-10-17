@@ -4,8 +4,6 @@ import React from "react";
 
 const WriteABlog = async () => {
   const user = await GetUser();
-
-  console.log(user);
   return <WriteBlog user={user?.user} />;
 };
 
