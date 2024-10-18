@@ -2,13 +2,9 @@ import Blogs from "@/components/shared/Blogs";
 import PeopleToFollow from "@/components/shared/PeopleToFollow";
 import Topics from "@/components/shared/Topics";
 import { Input } from "@/components/ui/input";
-import { validateRequest } from "@/lib/validateRequest";
 import { Search } from "lucide-react";
 
 export default async function Home() {
-  const result = await validateRequest();
-
-  console.log(result);
   return (
     <main className="flex-1 p-6">
       <div className="mx-auto">

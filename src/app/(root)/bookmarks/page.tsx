@@ -22,6 +22,8 @@ import { GetAllBookmarks } from "@/constants/actions/user.actions";
 
 const Bookmarks = async () => {
   const result = await GetAllBookmarks();
+
+  // console.log(result);
   return (
     <div className="min-h-screen w-full flex-1 px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto">
@@ -71,10 +73,11 @@ const Bookmarks = async () => {
                       </Avatar>
                       <div className="ml-2">
                         <CardTitle className="text-lg">
-                          Blog Post Title {item.blog.title}
+                          {item.blog.title}
                         </CardTitle>
                         <CardDescription>
-                          by Author {item.user.displayName} • 5 minutes read
+                          by Author <strong>{item.user.displayName}</strong> • 5
+                          minutes read
                         </CardDescription>
                       </div>
                     </div>
@@ -85,7 +88,7 @@ const Bookmarks = async () => {
                     </p>
                     <div className="mt-4 flex items-center justify-between">
                       <Link
-                        href={`/blog/${item}`}
+                        href={`/blog/${item.blogId}`}
                         className={buttonVariants({ variant: "default" })}
                       >
                         Read More

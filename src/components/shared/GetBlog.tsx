@@ -29,46 +29,6 @@ import { Badge } from "../ui/badge";
 const GetBlog = ({ blog }: { blog: any }) => {
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
-  //     title: "The Future of Artificial Intelligence: Promises and Perils",
-  //     author: "Dr. Jane Smith",
-  //     date: "July 15, 2023",
-  //     readTime: "8 min read",
-  //     content: `
-  //       <p>Artificial Intelligence (AI) has become one of the most transformative technologies of our time. As we stand on the brink of a new era, it's crucial to examine both the immense potential and the possible pitfalls that AI presents.</p>
-  //       <br />
-  //       <h1>The Promise of AI</h1>
-  //       <br />
-  //       <p>AI has already demonstrated its capacity to revolutionize various sectors:</p>
-  //       <br />
-  //       <ul>
-  //         <li><strong>Healthcare:</strong> AI is assisting in early disease detection, drug discovery, and personalized treatment plans.</li>
-  //         <li><strong>Education:</strong> Adaptive learning systems are tailoring educational experiences to individual students' needs.</li>
-  //         <li><strong>Environmental Conservation:</strong> AI models are helping predict climate change patterns and optimize resource usage.</li>
-  //       </ul>
-  //       <br />
-  //       <h2>The Perils of AI</h2>
-  //       <br />
-  //       <p>However, the rapid advancement of AI also raises significant concerns:</p>
-  //       <br />
-  //       <ul>
-  //         <li><strong>Job Displacement:</strong> As AI systems become more capable, there's a risk of widespread job losses across various industries.</li>
-  //         <li><strong>Privacy and Security:</strong> The vast amount of data required to train AI systems raises questions about data privacy and potential misuse.</li>
-  //         <li><strong>Ethical Dilemmas:</strong> As AI systems make more complex decisions, we face challenging ethical questions about accountability and bias.</li>
-  //       </ul>
-  // <br />
-  //       <h2>The Path Forward</h2>
-  //       <br />
-  //       <p>To harness the benefits of AI while mitigating its risks, we need:</p>
-  //       <br />
-  //       <ol>
-  //         <li>Robust regulatory frameworks to govern AI development and deployment</li>
-  //         <li>Increased investment in AI ethics research and education</li>
-  //         <li>Collaboration between technologists, policymakers, and ethicists to shape the future of AI</li>
-  //       </ol>
-  // <br />
-  //       <p>The future of AI is not predetermined. It's up to us to guide its development in a way that maximizes its benefits for humanity while safeguarding against potential harm. As we move forward, ongoing dialogue and critical examination of AI's impact will be essential in shaping a future where technology serves humanity's best interests.</p>
-  //     `,
-  //   };
 
   const { form, onSubmit } = WriteCommentValidation({
     authorId: blog.authorId,
@@ -90,12 +50,14 @@ const GetBlog = ({ blog }: { blog: any }) => {
       if (res.ok) {
         setIsBookmarked((prev) => !prev);
       } else {
-        console.error("Something went wrong while bookmarking: ");
+        console.error("Something went wrong while bookmarking: ", data.message);
       }
     } catch (error) {
       console.log(error);
     }
   };
+
+  console.log(isBookmarked);
 
   return (
     <div className="min-h-screen w-full flex-1 px-4 py-12 sm:px-6 lg:px-8">

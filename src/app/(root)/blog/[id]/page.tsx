@@ -5,7 +5,7 @@ import React from "react";
 const Blog = async ({ params }: { params: { id: string } }) => {
   const result = await GetTheBlog(params.id);
 
-  // console.log(result);
+  console.log(result);
   return <GetBlog blog={result} />;
 };
 
