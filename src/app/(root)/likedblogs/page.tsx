@@ -35,7 +35,7 @@ const LinkedBlogs = async () => {
         <div className="mb-6 flex items-center space-x-4">
           <div className="relative grow">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <Input className="pl-10" placeholder="Search bookmarks..." />
+            <Input className="pl-10" placeholder="Search liked blogs..." />
           </div>
 
           <Select>
@@ -64,10 +64,11 @@ const LinkedBlogs = async () => {
                     </Avatar>
                     <div className="ml-2">
                       <CardTitle className="text-lg">
-                        Blog Post Title {item.blog.title}
+                        {item.blog.title}
                       </CardTitle>
                       <CardDescription>
-                        by Author {item.user.displayName} • 5 minutes read
+                        by Author <strong>{item.user.displayName}</strong> • 5
+                        minutes read
                       </CardDescription>
                     </div>
                   </div>
@@ -78,7 +79,7 @@ const LinkedBlogs = async () => {
                   </p>
                   <div className="mt-4 flex items-center justify-between">
                     <Link
-                      href={`/blog/${item}`}
+                      href={`/blog/${item.blogId}`}
                       className={buttonVariants({ variant: "default" })}
                     >
                       Read More

@@ -16,7 +16,7 @@ import {
   UserPlus,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -29,69 +29,72 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 
-type Notification = {
-  id: number;
-  type: "comment" | "like" | "follow" | "bookmark";
-  content: string;
-  user: string;
-  time: string;
-  read: boolean;
-};
-
 const Notifications = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: 1,
-      type: "comment",
-      content: 'commented on your post "The Future of AI"',
-      user: "Alice Johnson",
-      time: "2 hours ago",
-      read: false,
-    },
-    {
-      id: 2,
-      type: "like",
-      content: 'liked your post "10 Tips for Productivity"',
-      user: "Bob Smith",
-      time: "4 hours ago",
-      read: false,
-    },
-    {
-      id: 3,
-      type: "follow",
-      content: "started following you",
-      user: "Charlie Brown",
-      time: "1 day ago",
-      read: true,
-    },
-    {
-      id: 4,
-      type: "bookmark",
-      content: "bookmarked your post 'Beginner's Guide to React'",
-      user: "Diana Prince",
-      time: "2 days ago",
-      read: true,
-    },
-    {
-      id: 5,
-      type: "comment",
-      content: 'replied to your comment on "Machine Learning Basics"',
-      user: "Eve Wilson",
-      time: "3 days ago",
-      read: true,
-    },
-  ]);
+  const [notifications, setNotifications] = useState<any[]>([]);
 
-  const markAsRead = (id: number) => {
-    setNotifications(
-      notifications.map((item) =>
-        item.id === id ? { ...item, read: true } : item,
-      ),
-    );
+  useEffect(() => {
+    const getNotifications = async () => {
+      try {
+        const res = await fetch("/api/notifications", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await res.json();
+
+        setNotifications(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    getNotifications();
+  }, []);
+
+  const handleMarkAsRead = async (id: string) => {
+    try {
+      const res = await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, read: true }),
+      });
+
+      if (res.ok) {
+        setNotifications(
+          notifications.map((item) =>
+            item.id === id ? { ...item, read: true } : item,
+          ),
+        );
+      } else {
+        console.error("Failed to mark notification as read");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const deleteNotification = (id: number) => {
-    setNotifications(notifications.filter((item) => item.id !== id));
+  const handleDeleteNotification = async (id: string) => {
+    try {
+      const res = await fetch("/api/notifications", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+
+      if (res.ok) {
+        setNotifications(notifications.filter((item) => item.id !== id));
+      } else {
+        console.log("Failed to delete notification");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getIcon = (type: string) => {
@@ -122,7 +125,7 @@ const Notifications = () => {
         <div className="mb-6 flex items-center space-x-4">
           <div className="relative grow">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <Input className="pl-10" placeholder="Search bookmarks..." />
+            <Input className="pl-10" placeholder="Search notifications..." />
           </div>
 
           <Select>
@@ -166,7 +169,7 @@ const Notifications = () => {
                       <AvatarFallback>
                         {item.user
                           .split(" ")
-                          .map((i) => i[0])
+                          .map((i: string) => i[0])
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
@@ -189,12 +192,14 @@ const Notifications = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem onClick={() => markAsRead(item.id)}>
+                      <DropdownMenuItem
+                        onClick={() => handleMarkAsRead(item.id)}
+                      >
                         Mark as {item.read ? "unread" : "read"}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
-                        onClick={() => deleteNotification(item.id)}
+                        onClick={() => handleDeleteNotification(item.id)}
                       >
                         Delete
                       </DropdownMenuItem>

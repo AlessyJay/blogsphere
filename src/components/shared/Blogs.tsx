@@ -16,7 +16,7 @@ import { GetAllPosts } from "@/constants/actions/post.actions";
 const Blogs = async () => {
   const result = await GetAllPosts();
 
-  console.log(result);
+  // console.log(result);
   return (
     <div className="space-y-6">
       {result?.map((item) => {

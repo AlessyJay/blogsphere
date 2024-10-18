@@ -1,15 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Heart,
   MessageSquare,
   Bookmark,
   Share2,
   MoreHorizontal,
-  Send,
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -20,20 +19,40 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Form } from "@/components/ui/form";
-import { WriteCommentValidation } from "@/constants/FormValidation";
-import { TextAreaForm } from "@/components/shared/FormComponents";
 import { formatBlogDate } from "@/lib/utils";
 import { Badge } from "../ui/badge";
+import WriteComments from "./WriteComments";
+import { useToast } from "@/hooks/use-toast";
 
 const GetBlog = ({ blog }: { blog: any }) => {
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
+  const { toast } = useToast();
 
-  const { form, onSubmit } = WriteCommentValidation({
-    authorId: blog.authorId,
-    blogId: blog.id,
-  });
+  useEffect(() => {
+    const fetchBookmarkedStatus = async () => {
+      try {
+        const res = await fetch(`/api/bookmark?blogId=${blog.id}`);
+        const data = await res.json();
+        setIsBookmarked(data.bookmarked);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    const fetchLikeStatus = async () => {
+      try {
+        const res = await fetch(`/api/likeBlog?blogId=${blog.id}`);
+        const data = await res.json();
+        setIsLiked(data.liked);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchBookmarkedStatus();
+    fetchLikeStatus();
+  }, [blog.id]);
 
   const handleBookmark = async () => {
     try {
@@ -49,6 +68,19 @@ const GetBlog = ({ blog }: { blog: any }) => {
 
       if (res.ok) {
         setIsBookmarked((prev) => !prev);
+        if (!isBookmarked) {
+          toast({
+            title: "Bookmarked",
+            description: "You bookmarked this blog",
+            variant: "default",
+          });
+        } else {
+          toast({
+            title: "Unbookmarked",
+            description: "You unbookmarked this blog",
+            variant: "destructive",
+          });
+        }
       } else {
         console.error("Something went wrong while bookmarking: ", data.message);
       }
@@ -57,7 +89,40 @@ const GetBlog = ({ blog }: { blog: any }) => {
     }
   };
 
-  console.log(isBookmarked);
+  const handleLike = async () => {
+    try {
+      const res = await fetch("/api/likeBlog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blogId: blog.id }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setIsLiked((prev) => !prev);
+        if (!isLiked) {
+          toast({
+            title: "Liked",
+            description: "You liked this blog!",
+            variant: "default",
+          });
+        } else {
+          toast({
+            title: "Unliked",
+            description: "You unliked this blog",
+            variant: "destructive",
+          });
+        }
+      } else {
+        console.error("Something went wrong while liking: ", data.message);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // console.log(isBookmarked);
 
   return (
     <div className="min-h-screen w-full flex-1 px-4 py-12 sm:px-6 lg:px-8">
@@ -69,7 +134,7 @@ const GetBlog = ({ blog }: { blog: any }) => {
                 variant={"outline"}
                 size={"icon"}
                 className={`rounded-full ${isLiked ? "bg-red-100 text-red-500" : ""}`}
-                onClick={() => setIsLiked(!isLiked)}
+                onClick={handleLike}
               >
                 <Heart className="size-4" />
               </Button>
@@ -79,7 +144,7 @@ const GetBlog = ({ blog }: { blog: any }) => {
               <Button
                 variant="outline"
                 size={"icon"}
-                className={`rounded-full ${isBookmarked ? "bg-blue-100 text-blue-500" : ""}`}
+                className={`rounded-full ${isBookmarked ? "bg-yellow-600 text-white" : ""}`}
                 onClick={handleBookmark}
               >
                 <Bookmark className="size-4" />
@@ -156,7 +221,7 @@ const GetBlog = ({ blog }: { blog: any }) => {
               <Button
                 variant={"outline"}
                 size={"icon"}
-                className={`rounded-full ${isLiked ? "bg-red-100" : ""}`}
+                className={`rounded-full ${isLiked ? "bg-red-100 text-red-500" : ""}`}
                 onClick={() => setIsLiked(!isLiked)}
               >
                 <Heart className="size-4" />
@@ -185,69 +250,7 @@ const GetBlog = ({ blog }: { blog: any }) => {
               </Button>
             </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Comments</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="mb-6">
-                    <div className="flex items-start space-x-4">
-                      <Avatar>
-                        <AvatarImage src={blog.author?.image} />
-                        <AvatarFallback>
-                          {blog.author.displayName[0].toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <TextAreaForm
-                          control={form.control}
-                          formName="content"
-                          title=""
-                          placeholder="Add a comment"
-                        />
-                        <Button type="submit" className="my-2">
-                          <Send className="mr-2 size-4" />
-                          Post Comment
-                        </Button>
-                      </div>
-                    </div>
-                  </form>
-                </Form>
-                <div className="space-y-6">
-                  {blog.comments.map((comment: any) => (
-                    <React.Fragment key={comment.id}>
-                      <div key={comment.id} className="flex space-x-4">
-                        <Avatar>
-                          <AvatarImage src={blog.author?.image} />
-                          <AvatarFallback>
-                            {blog.author.username
-                              .split(" ")
-                              .map((n: string) => n[0])
-                              .join("")
-                              .toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <h4 className="text-sm font-semibold">
-                              {comment.user.username}
-                            </h4>
-                            <span className="text-xs text-gray-500">
-                              {formatBlogDate(comment.commentedAt)} ago
-                            </span>
-                          </div>
-                          <p className="mt-1 text-sm text-gray-700">
-                            {comment.content}
-                          </p>
-                        </div>
-                      </div>
-                      <hr className="my-2" />
-                    </React.Fragment>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <WriteComments blog={blog} />
           </div>
         </div>
       </div>

@@ -18,7 +18,7 @@ import Link from "next/link";
 const UserProfile = ({ user, session }: { user: any; session: any }) => {
   const [activeTab, setActiveTab] = useState<string>("posts");
 
-  console.log(user);
+  // console.log(user);
 
   return (
     <div className="min-h-screen w-full flex-1">

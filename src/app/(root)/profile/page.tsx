@@ -10,7 +10,7 @@ const Profile = async () => {
 
   const user = await GetUserProfile(session.user?.id);
 
-  console.log(user);
+  // console.log(user);
 
   return <UserProfile user={user} session={session} />;
 };

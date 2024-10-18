@@ -12,6 +12,7 @@ import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { validateRequest } from "@/lib/validateRequest";
+import { NextResponse } from "next/server";
 
 const isTokenExpired = new Date(14 * 24 * 60 * 60 * 1000);
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -216,26 +217,31 @@ export const GetAllLikes = async () => {
   }
 };
 
-// export const Logout = async () => {
-//   try {
-//     cookies().set("token", "", {
-//       httpOnly: true,
-//       secure: process.env.NODE_ENV === "production",
-//       sameSite: "strict",
-//       maxAge: 0,
-//       path: "/",
-//     });
+export const Logout = async () => {
+  try {
+    const session = await validateRequest();
 
-//     // Remove token from database
-//     const userSession = await validateRequest();
-//     await prisma.session.delete({
-//       where: {
-//         userId: userSession.user.id,
-//       },
-//     });
+    if (!session.user?.id) {
+      return NextResponse.redirect(new URL("/sign-in"));
+    }
 
-//     return redirect("/sign-in");
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+    cookies().set("token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 0,
+      path: "/",
+    });
+
+    // Remove token from database
+    await prisma.session.delete({
+      where: {
+        userId: session.user.id,
+      },
+    });
+
+    return NextResponse.redirect(new URL("/sign-in"));
+  } catch (error) {
+    console.log(error);
+  }
+};

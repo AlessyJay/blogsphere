@@ -19,38 +19,33 @@ export const POST = async (req: Request) => {
       );
     }
 
-    const userId = session.user.id;
-
-    const existingBookmark = await prisma.bookmark.findFirst({
+    const existingLike = await prisma.like.findFirst({
       where: {
-        userId,
         blogId,
+        userId: session.user.id,
       },
     });
 
-    if (existingBookmark) {
-      await prisma.bookmark.delete({
+    if (existingLike) {
+      await prisma.like.delete({
         where: {
-          id: existingBookmark.id,
+          id: existingLike.id,
         },
       });
 
-      return NextResponse.json(
-        { message: "Bookmark removed" },
-        { status: 200 },
-      );
+      return NextResponse.json({ message: "Unliked" }, { status: 200 });
     } else {
-      await prisma.bookmark.create({
+      await prisma.like.create({
         data: {
-          userId,
           blogId,
+          userId: session.user.id,
         },
       });
 
-      return NextResponse.json({ message: "Bookmark added" }, { status: 200 });
+      return NextResponse.json({ message: "Liked" }, { status: 200 });
     }
   } catch (error) {
-    console.error("Error bookmarking blog: " + error);
+    console.error("Error liking blog: ", error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 },
@@ -60,42 +55,38 @@ export const POST = async (req: Request) => {
 
 export const GET = async (req: Request) => {
   try {
+    const session = await validateRequest();
     const url = new URL(req.url);
     const blogId = url.searchParams.get("blogId");
-    const session = await validateRequest();
 
     if (!session.user?.id) {
-      return NextResponse.json({ bookmarked: false }, { status: 401 });
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     if (!blogId) {
       return NextResponse.json(
-        {
-          message: "Blog ID is required!",
-        },
+        { message: "Blog ID is required!" },
         { status: 400 },
       );
     }
 
-    const userId = session.user.id;
-
-    const existingBookmark = await prisma.bookmark.findFirst({
+    const findLike = await prisma.like.findFirst({
       where: {
-        userId,
         blogId,
+        userId: session.user.id,
       },
     });
 
-    return NextResponse.json({ bookmarked: existingBookmark !== null });
+    if (findLike) {
+      return NextResponse.json({ liked: true }, { status: 200 });
+    } else {
+      return NextResponse.json({ liked: false }, { status: 200 });
+    }
   } catch (error) {
-    console.error("Internal server error: " + error);
+    console.error("Error liking blog: ", error);
     return NextResponse.json(
-      {
-        message: "Internal server error",
-      },
-      {
-        status: 500,
-      },
+      { message: "Internal server error" },
+      { status: 500 },
     );
   }
 };

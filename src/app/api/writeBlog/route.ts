@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/prisma";
 import { WriteBlogSchema, WriteBlogType } from "@/constants/FormSchemas";
 
-export async function POST(req: Request) {
+export const POST = async (req: Request) => {
   try {
     const body = await req.json();
     const values: WriteBlogType = WriteBlogSchema.parse(body);
@@ -50,4 +50,4 @@ export async function POST(req: Request) {
       { status: 500 },
     );
   }
-}
+};

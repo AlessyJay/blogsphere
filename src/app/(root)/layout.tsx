@@ -2,6 +2,7 @@ import LeftsideBar from "@/components/shared/LeftSideBar";
 import MobileNavbar from "@/components/shared/MobileNavbar";
 import { GetUser } from "@/constants/actions/user.actions";
 import React from "react";
+import { Toaster } from "@/components/ui/toaster";
 
 const layout = async ({
   children,
@@ -12,6 +13,7 @@ const layout = async ({
       <LeftsideBar user={{ ...result?.user }} />
       {children}
       <MobileNavbar user={{ ...result?.user }} />
+      <Toaster />
     </div>
   );
 };

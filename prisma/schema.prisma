@@ -115,7 +115,7 @@ model Bookmark {
 }
 
 model Like {
-  id      String   @id @default(cuid())
+  id      String   @id @default(uuid())
   blogId  String
   userId  String
   likedAt DateTime @default(now())

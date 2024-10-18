@@ -25,7 +25,7 @@ export const WriteBlogValidation = ({ user }: { user: string }) => {
   });
 
   const onSubmit = async (values: WriteBlogType) => {
-    console.log(values);
+    // console.log(values);
     try {
       const res = await fetch("/api/writeBlog", {
         method: "POST",
@@ -95,7 +95,7 @@ export const SignInValidation = () => {
   });
 
   const SignInSubmit = async (values: SignInType) => {
-    console.log(values);
+    // console.log(values);
     await SignIn(values);
   };
 
@@ -116,7 +116,7 @@ export const SignUpValidation = () => {
   });
 
   const SignUpSubmit = async (values: SignUpType) => {
-    console.log(values);
+    // console.log(values);
     await SignUp(values);
   };
 
